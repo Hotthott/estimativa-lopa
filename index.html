@@ -4,14 +4,14 @@
 <title>Estimativa operacional – LOG-IN PANTANAL</title>
 <meta name="description" content="Estimativa operacional de navios LOG-IN PANTANAL: contêineres de 20 e 40 pés, cheios e vazios">
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--fg:#14202b;--mut:#5d6b78;--line:#dde2e7;--acc:#0b5fa5;--accbg:#e4f0fb;--ok:#e3f4e8;--okfg:#1d6b34;--bad:#fde8e6;--badfg:#9a2b1f;--warn:#fff4dc;--warnfg:#6b4a00;
+:root{--bg:#f6f7f9;--card:#fff;--fg:#14202b;--mut:#5d6b78;--line:#dde2e7;--acc:#004A98;--accbg:#e3edf8;--grn:#6AAF1F;--ok:#eaf5db;--okfg:#3a6a0c;--bad:#fde8e6;--badfg:#9a2b1f;--warn:#fff4dc;--warnfg:#6b4a00;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171e;--card:#192430;--fg:#e7edf2;--mut:#93a3b1;--line:#2b3a48;--acc:#6db3f2;--accbg:#183349;--ok:#163423;--okfg:#7fd39a;--bad:#3b1f1c;--badfg:#f0a59b;--warn:#3a2f12;--warnfg:#f0d08a;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#10171e;--card:#192430;--fg:#e7edf2;--mut:#93a3b1;--line:#2b3a48;--acc:#6db3f2;--accbg:#183349;--ok:#163423;--okfg:#7fd39a;--bad:#3b1f1c;--badfg:#f0a59b;--warn:#3a2f12;--warnfg:#f0d08a;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171e;--card:#192430;--fg:#e7edf2;--mut:#93a3b1;--line:#2b3a48;--acc:#6aa5e8;--accbg:#10294a;--grn:#6AAF1F;--ok:#1d3010;--okfg:#a6d96a;--bad:#3b1f1c;--badfg:#f0a59b;--warn:#3a2f12;--warnfg:#f0d08a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10171e;--card:#192430;--fg:#e7edf2;--mut:#93a3b1;--line:#2b3a48;--acc:#6aa5e8;--accbg:#10294a;--grn:#6AAF1F;--ok:#1d3010;--okfg:#a6d96a;--bad:#3b1f1c;--badfg:#f0a59b;--warn:#3a2f12;--warnfg:#f0d08a;color-scheme:dark}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 main{max-width:1040px;margin:0 auto;padding:16px}
-h1{font-size:20px;margin:4px 0 2px}h2{font-size:16px;margin:0 0 10px}.sub{color:var(--mut);margin:0 0 14px}
+h1{font-size:20px;margin:4px 0 2px;color:var(--acc);padding-bottom:6px;border-bottom:3px solid var(--grn)}h2{font-size:16px;margin:0 0 10px}.sub{color:var(--mut);margin:0 0 14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
 label{display:block;font-size:12px;color:var(--mut);margin-bottom:4px}
@@ -28,8 +28,8 @@ th{position:sticky;top:0;background:var(--card);color:var(--mut);font-weight:600
 tfoot td{font-weight:600}
 details summary{cursor:pointer;font-weight:600}.note{font-size:12px;color:var(--mut)}.sum{margin:12px 0 0;font-weight:600}
 .rl td{background:var(--accbg)}td input.re{width:80px;min-width:80px}#relat h3{margin:14px 0 6px;font-size:14px}.bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.pb{height:12px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:6px}.pb i{display:block;height:100%;background:var(--acc)}
-.vb{display:grid;grid-template-columns:130px 1fr 60px;gap:8px;align-items:center;font-size:12px;margin:3px 0}.vb span.b{height:14px;border-radius:4px;background:var(--accbg);border:1px solid var(--acc);display:block}.vb span.b.r{background:var(--acc)}
+.pb{height:12px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:6px}.pb i{display:block;height:100%;background:var(--grn)}
+.vb{display:grid;grid-template-columns:130px 1fr 60px;gap:8px;align-items:center;font-size:12px;margin:3px 0}.vb span.b{height:14px;border-radius:4px;background:var(--accbg);border:1px solid var(--acc);display:block}.vb span.b.r{background:var(--grn);border-color:var(--grn)}
 @media print{main>section:not(#relat),main>h1,main>.sub{display:none!important}.noprint{display:none!important}body{background:#fff;color:#000}#relat{border:0;padding:0}}
 </style></head><body><main>
 <h1>Estimativa operacional – LOG-IN PANTANAL</h1>
@@ -215,19 +215,19 @@ function divLines(){const d=divData();if(!d)return null;const o=[["Navio",d.nav]
  if(d.lib)o.push(["Liberação → término",nf(d.lib.h,1)+" h (meta "+nf(d.lib.meta)+" h) · "+(d.lib.meta-d.lib.h>=0?"folga "+nf(d.lib.meta-d.lib.h,1)+" h":"estouro "+nf(d.lib.h-d.lib.meta,1)+" h")]);
  d.tides.forEach((t,i)=>o.push(["Maré de saída "+(i+1)+"ª",t.tt+" · "+t.jn+" · "+t.st]));return o}
 function divText(){const o=divLines();if(!o)return"";return "*ESTIMATIVA OPERACIONAL · LOG-IN PANTANAL*\n"+o.map(([a,b])=>"*"+a+":* "+b).join("\n")+"\n_Gerado em "+fd(new Date())+"_"}
-function divPng(){const d=divData(),W=1000,P=40,x0=document.createElement("canvas"),G="#8ef0b0",R="#ff9a9a",M="#9fe0b8",F="'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+function divPng(){const d=divData(),W=1000,P=40,x0=document.createElement("canvas"),G="#b4e86a",R="#ffb3a8",M="#a9c8ec",F="'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
  const H=1300+(d.lib?116:0)+(d.tides.length?52+150*d.tides.length:0)+90;const S=.45;x0.width=Math.round(W*S);x0.height=Math.round(H*S);const x=x0.getContext("2d");x.scale(S,S);
- const gr=x.createLinearGradient(0,0,W*.6,H);gr.addColorStop(0,"#0a2d3d");gr.addColorStop(.45,"#0b4a3a");gr.addColorStop(1,"#0a6a3a");x.fillStyle=gr;x.fillRect(0,0,W,H);
+ const gr=x.createLinearGradient(0,0,W*.6,H);gr.addColorStop(0,"#00306a");gr.addColorStop(.55,"#004A98");gr.addColorStop(1,"#4a8a12");x.fillStyle=gr;x.fillRect(0,0,W,H);
  const rr=(a,b,w,h,r,f)=>{x.beginPath();x.roundRect(a,b,w,h,r);x.fillStyle=f;x.fill()},T=(t,a,b,sz,w,c,al)=>{x.font=w+" "+sz+"px "+F;x.fillStyle=c;x.textAlign=al||"left";x.fillText(t,a,b)},fit=(t,a,b,sz,w,c,mx)=>{let z=sz;x.font=w+" "+z+"px "+F;while(x.measureText(t).width>mx&&z>16){z--;x.font=w+" "+z+"px "+F}T(t,a,b,z,w,c)};
- const up=t=>t.toUpperCase();T(up("Estimativa operacional · LOG-IN PANTANAL"),P,70,24,"600",M);fit(up(d.nav),P,150,84,"800","#fff",W-2*P);T("Início: "+d.ini,P,196,28,"400","#cfeede");
+ const up=t=>t.toUpperCase();T(up("Estimativa operacional · LOG-IN PANTANAL"),P,70,24,"600",M);fit(up(d.nav),P,150,84,"800","#fff",W-2*P);T("Início: "+d.ini,P,196,28,"400","#dbe8f7");
  rr(P,240,W-2*P,270,36,"rgba(255,255,255,.12)");T("TÉRMINO PREVISTO",P+44,300,24,"600",M);fit(d.end,P+44,400,84,"800",G,W-2*P-88);T(nf(d.hrs,1)+" h de operação · "+nf(d.hrs/24,1)+" dias",P+44,470,32,"500","#fff");
- const bw=(W-2*P-40)/3;[["TOTAL DE CARGA",nf(d.total),"mov. · "+nf(d.teu)+" TEU"],["PERÍODOS OPERADOS",String(d.nr),"de "+d.nper+" no total"],["FALTAM OPERAR",String(d.np),nf(d.left)+" mov. restantes"]].forEach((c,i)=>{const a=P+i*(bw+20);rr(a,550,bw,230,30,"rgba(255,255,255,.12)");T(c[0],a+28,604,21,"600",M);T(c[1],a+28,700,76,"800","#fff");T(c[2],a+28,750,24,"400","#cfeede")});
- T("PROGRESSO",P,850,22,"600",M);T(d.pct+"%",W-P,850,22,"700","#fff","right");rr(P,870,W-2*P,32,16,"rgba(255,255,255,.15)");if(d.pct>0)rr(P,870,Math.max(32,(W-2*P)*d.pct/100),32,16,G);
- T("CARGA: descarga "+nf(d.desc)+" · embarque "+nf(d.emb)+" · sem restow",P,950,24,"400","#cfeede");
+ const bw=(W-2*P-40)/3;[["TOTAL DE CARGA",nf(d.total),"mov. · "+nf(d.teu)+" TEU"],["PERÍODOS OPERADOS",String(d.nr),"de "+d.nper+" no total"],["FALTAM OPERAR",String(d.np),nf(d.left)+" mov. restantes"]].forEach((c,i)=>{const a=P+i*(bw+20);rr(a,550,bw,230,30,"rgba(255,255,255,.12)");T(c[0],a+28,604,21,"600",M);T(c[1],a+28,700,76,"800","#fff");T(c[2],a+28,750,24,"400","#dbe8f7")});
+ T("PROGRESSO",P,850,22,"600",M);T(d.pct+"%",W-P,850,22,"700","#fff","right");rr(P,870,W-2*P,32,16,"rgba(255,255,255,.15)");if(d.pct>0)rr(P,870,Math.max(32,(W-2*P)*d.pct/100),32,16,"#6AAF1F");
+ T("CARGA: descarga "+nf(d.desc)+" · embarque "+nf(d.emb)+" · sem restow",P,950,24,"400","#dbe8f7");
  T("CENÁRIOS DE TÉRMINO",P,1030,22,"600",M);let y=1085;d.sc.forEach(s=>{T(s[0],P,y,34,s[2]?"700":"400",s[2]?G:"#fff");T(s[1],W-P,y,34,s[2]?"700":"400",s[2]?G:"#fff","right");y+=58});
  y+=34;if(d.lib){T("LIBERAÇÃO → TÉRMINO",P,y,22,"600",M);const ok=d.lib.meta-d.lib.h>=0;T(nf(d.lib.h,1)+" h · meta "+nf(d.lib.meta)+" h · "+(ok?"folga "+nf(d.lib.meta-d.lib.h,1)+" h":"estouro "+nf(d.lib.h-d.lib.meta,1)+" h"),P,y+46,32,"700",ok?G:R);y+=116}
- if(d.tides.length){T("MARÉ DE SAÍDA PREVISTA",P,y,22,"600",M);y+=52;d.tides.forEach(t=>{fit(t.tt,P,y,32,"700","#fff",W-2*P);fit(t.jn,P,y+40,26,"400","#cfeede",W-2*P);fit(t.st,P,y+80,26,"700",t.cl==="ok"?G:R,W-2*P);y+=150})}
- T("Gerado em "+fd(new Date())+" · estimativa baseada no histórico de navios LOG-IN PANTANAL",W/2,H-30,20,"400","#a9d9c0","center");return{c:x0,H:y+40}}
+ if(d.tides.length){T("MARÉ DE SAÍDA PREVISTA",P,y,22,"600",M);y+=52;d.tides.forEach(t=>{fit(t.tt,P,y,32,"700","#fff",W-2*P);fit(t.jn,P,y+40,26,"400","#dbe8f7",W-2*P);fit(t.st,P,y+80,26,"700",t.cl==="ok"?G:R,W-2*P);y+=150})}
+ T("Gerado em "+fd(new Date())+" · estimativa baseada no histórico de navios LOG-IN PANTANAL",W/2,H-30,20,"400","#d3e6f7","center");return{c:x0,H:y+40}}
 $("div").onclick=()=>{if(!divData()){alert("Preencha o início e os volumes para gerar o resultado.");return}
  const old=document.getElementById("dvbox");if(old)old.remove();const q=divPng(),c=q.c,box=document.createElement("section");box.className="card";box.id="dvbox";
  box.innerHTML='<h2>Divulgar resultado</h2><div class="bar"><button type="button" id="dv1">Copiar texto (WhatsApp)</button><button type="button" id="dv2">Baixar imagem (PNG)</button><button type="button" id="dv3">Compartilhar</button><button type="button" id="dv4">Fechar</button></div><p class="note" id="dvm"></p>';
