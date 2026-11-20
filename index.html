@@ -53,7 +53,11 @@ details summary{cursor:pointer;font-weight:600}.note{font-size:12px;color:var(--
 <p class="note" id="nrm"></p>
 <div class="sx" style="margin-top:12px;max-height:none"><table><thead><tr><th>Contêiner</th><th>Descarga cheios</th><th>Descarga vazios</th><th>Embarque cheios</th><th>Embarque vazios</th><th>Total (un.)</th><th>TEU</th></tr></thead><tbody id="tipos"></tbody><tfoot id="tfo"></tfoot></table></div>
 <p class="note">Só contêineres: 20 pés e 40 pés, cheios e vazios. Cada unidade conta 1 movimento, sem bundle e sem restow. O TEU (20 pés = 1, 40 pés = 2) é só informativo. Os ternos de cada turno são definidos na tabela de simulação abaixo.</p></section>
-<section class="card"><h2>Resultado</h2><div class="bar"><button id="rel" type="button">Gerar relatório</button><button id="clr" type="button">Limpar tudo</button></div><div class="grid" id="res"></div><div id="meta2"></div><p class="sum" id="red"></p><div class="warn" id="aviso"></div></section>
+<section class="card"><h2>Resultado</h2><div class="bar"><button id="rel" type="button">Gerar relatório</button><button id="div" type="button">Divulgar resultado</button><button id="clr" type="button">Limpar tudo</button></div><div class="grid" id="res"></div><div id="meta2"></div><p class="sum" id="red"></p><div class="warn" id="aviso"></div></section>
+<section class="card"><h2>Operações compartilhadas com a equipe (até 5)</h2><p class="note">Salve esta operação online para a equipe abrir e atualizar. Cada operação fica guardada por 10 dias após a última alteração. Quem tem o link do sistema consegue ver e editar.</p>
+<div class="grid"><div><label for="opn">Nome da operação</label><input id="opn" type="text" placeholder="ex.: LOPA 624S"></div></div>
+<div class="bar"><button id="ops" type="button">Salvar como nova operação</button><button id="opu" type="button">Atualizar a operação aberta</button><button id="opr" type="button">Atualizar lista</button></div>
+<p class="note" id="opm"></p><div class="sx" id="opl" style="max-height:none"></div></section>
 <section class="card"><h2>Painel da operação</h2><div class="grid" id="pan"></div><div class="pb"><i id="pbi" style="width:0"></i></div><p class="note" id="pbt"></p></section>
 <section class="card"><h2>Ternos e simulação por turno (cenário provável)</h2><p class="note">Lance os movimentos reais e os ternos realizados em cada turno: o real substitui o estimado do período e o saldo é recalculado nos turnos seguintes.</p><div class="bar"><button id="xls" type="button">Exportar para o Excel (modelo LOPA)</button></div><p class="note" id="xmsg"></p><div class="sx" id="tab"></div></section>
 <section class="card"><details><summary>Base histórica (10 viagens, set–nov/2026)</summary><div class="sx" id="his" style="margin-top:10px"></div>
@@ -171,6 +175,57 @@ $("his").innerHTML="<table><tr><th>Viagem</th><th>Início</th><th>Períodos</th>
 $("hper").innerHTML="<table><tr><th>Viagem</th><th>Data</th><th>Período</th><th>Ternos</th><th>Horas</th><th>Mov.</th><th>Mov/h</th><th>Uso</th></tr>"+H.map(r=>`<tr><td>${r.v}</td><td>${r.d}</td><td>${r.p}</td><td>${r.t}</td><td>${nf(r.h,1)}</td><td>${nf(r.m)}</td><td>${nf(r.m/r.h,1)}</td><td>${r.x?"excluído (ternos inconsistentes)":r.h>=5.5?"calibração":"parcial"}</td></tr>`).join("")+"</table>";
 $("hnote").textContent=`A base só traz o total de movimentos por período (sem separar 20/40 pés nem cheios/vazios), então a divisão por tipo é informada por você. O total do navio ficou em ~36 mov/h com 2 ternos e ~38 mov/h com 3 ternos (bruto), ou seja, cada terno a mais soma pouco; por isso a produção é estimada como um total do navio mais ${SL.toString().replace(".",",")} mov/h por terno, e não por terno multiplicado. Percentis 25/50/75 dos ${CAL.length} períodos completos válidos definem conservador/provável/otimista; a parada de 30 min já está embutida no histórico. 5 períodos foram excluídos por inconsistência entre ternos e lançamentos.`;
 (function(){const d=new Date();d.setHours(d.getHours()+1,0,0,0);$("ini").value=loc(d.getTime());load();
+
+/* ===== Operações compartilhadas (Firebase RTDB via REST) ===== */
+const FB="https://estimativa-lopa-default-rtdb.firebaseio.com/lopa/ops",MAXOP=5,KEEP=10*864e5;let curOp=null,lastTs=0,saving=false,timer=null;
+const opm=t=>{$("opm").textContent=t};
+function snap(){const v={};document.querySelectorAll("main input[id],main select[id]").forEach(e=>{if(e.id!=="opn")v[e.id]=e.value});return{v,T:TERN,A:RT,R:REAL}}
+function apply(o){for(const k in TERN)delete TERN[k];for(const k in RT)delete RT[k];for(const k in REAL)delete REAL[k];
+ for(const id in o.v){const e=$(id);if(e)e.value=o.v[id]}Object.assign(TERN,o.T||{});Object.assign(RT,o.A||{});Object.assign(REAL,o.R||{});$("nav").dispatchEvent(new Event("input"))}
+async function fbj(path,method,body){const r=await fetch(FB+path+".json",{method:method||"GET",body:body?JSON.stringify(body):undefined});if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}
+async function listOps(){const all=await fbj("")||{},now=Date.now();
+ for(const id in all){if(now-(all[id].ts||0)>KEEP){delete all[id];fbj("/"+id,"DELETE").catch(()=>{})}}return all}
+async function drawOps(){try{const all=await listOps(),ids=Object.keys(all).sort((a,b)=>all[b].ts-all[a].ts);
+ $("opl").innerHTML=ids.length?"<table><tr><th>Operação</th><th>Última alteração</th><th>Expira em</th><th></th></tr>"+ids.map(id=>{const o=all[id];return `<tr${id===curOp?' style="font-weight:700"':""}><td>${esc(o.nome||"(sem nome)")}${id===curOp?" · aberta":""}</td><td>${fd(new Date(o.ts))}</td><td>${fd(new Date(o.ts+KEEP))}</td><td><button type="button" data-a="abrir" data-id="${id}">Abrir</button> <button type="button" data-a="del" data-id="${id}">Excluir</button></td></tr>`}).join("")+"</table>":"<p class='note'>Nenhuma operação salva ainda.</p>";
+ if(curOp&&all[curOp]&&all[curOp].ts>lastTs&&!saving)opm("A equipe alterou esta operação às "+fd(new Date(all[curOp].ts))+". Clique em Abrir para carregar a versão mais recente.");
+ return all}catch(e){opm("Não consegui acessar o Firebase ("+e.message+"). Verifique a internet e as regras do banco.");return null}}
+async function putOp(id,nome){saving=true;try{const ts=Date.now();await fbj("/"+id,"PUT",{nome,ts,d:snap()});curOp=id;lastTs=ts;opm("Salvo online em "+fd(new Date(ts))+".")}finally{saving=false}await drawOps()}
+$("ops").onclick=async()=>{const nome=$("opn").value.trim()||$("nav").value.trim()||"Operação";const all=await drawOps();if(!all)return;
+ if(Object.keys(all).length>=MAXOP){opm("Limite de "+MAXOP+" operações atingido. Exclua uma da lista para salvar outra.");return}
+ try{await putOp("op"+Date.now().toString(36),nome)}catch(e){opm("Erro ao salvar: "+e.message)}};
+$("opu").onclick=async()=>{if(!curOp){opm("Nenhuma operação aberta. Abra uma da lista ou salve como nova.");return}
+ try{await putOp(curOp,$("opn").value.trim()||"Operação")}catch(e){opm("Erro ao salvar: "+e.message)}};
+$("opr").onclick=drawOps;
+$("opl").addEventListener("click",async e=>{const b=e.target.closest("button[data-id]");if(!b)return;const id=b.dataset.id;
+ try{if(b.dataset.a==="abrir"){const o=await fbj("/"+id);if(!o)return drawOps();apply(o.d);curOp=id;lastTs=o.ts;$("opn").value=o.nome||"";opm("Operação \""+(o.nome||"")+"\" aberta. Alterações são salvas online automaticamente.");drawOps()}
+ else if(confirm("Excluir esta operação para todos?")){await fbj("/"+id,"DELETE");if(curOp===id)curOp=null;drawOps()}}catch(x){opm("Erro: "+x.message)}});
+document.addEventListener("input",()=>{if(!curOp||saving)return;clearTimeout(timer);timer=setTimeout(()=>{putOp(curOp,$("opn").value.trim()||"Operação").catch(e=>opm("Erro ao salvar: "+e.message))},2500)});
+drawOps();setInterval(()=>{if(!saving)drawOps()},30000);
+
+/* ===== Divulgar resultado ===== */
+function divLines(){if(!LAST)return null;const L=LAST,P=L.S.p,g=id=>$(id).value,h=(k)=>(L.S[k].end-L.st)/36e5,lv=new Date(g("lib")).getTime(),meta=Math.max(1,+g("meta")||40),J=readJan(),o=[];
+ o.push(["Navio",g("nav")||"LOG-IN PANTANAL"]);o.push(["Início da operação",fd(new Date(L.st))]);
+ o.push(["Término provável",fd(P.end)]);o.push(["Faixa",fd(L.S.o.end)+" a "+fd(L.S.c.end)]);
+ o.push(["Carga",nf(L.total)+" mov. · "+nf(L.T20+2*L.T40)+" TEU"]);o.push(["Duração",nf(h("p"),1)+" h ("+P.rows.length+" turnos)"]);
+ if(!isNaN(lv)){const hl=(P.end-lv)/36e5;o.push(["Liberação → término",nf(hl,1)+" h (meta "+nf(meta)+" h) · "+(meta-hl>=0?"folga "+nf(meta-hl,1)+" h":"estouro "+nf(hl-meta,1)+" h")])}
+ if(J.length)o.push(["Maré de saída",J.map(w=>fd(new Date(w[0]))+" até "+fd(new Date(w[1]))).join("  |  ")]);
+ return o}
+function divText(){const o=divLines();if(!o)return"";return "*ESTIMATIVA OPERACIONAL*\n"+o.map(([a,b])=>"*"+a+":* "+b).join("\n")+"\n_Gerado em "+fd(new Date())+"_"}
+function divPng(o){const W=1080,P=56,rh=96,H=220+o.length*rh+90,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+ x.fillStyle="#0b2a4a";x.fillRect(0,0,W,H);x.fillStyle="#fff";x.font="700 44px sans-serif";x.fillText("Estimativa operacional",P,100);
+ x.font="400 28px sans-serif";x.fillStyle="#9fc4ee";x.fillText("LOG-IN PANTANAL · Vitória-ES",P,150);
+ let y=210;o.forEach(([a,b],i)=>{x.fillStyle=i===2?"#1d6b3f":"rgba(255,255,255,.08)";x.fillRect(P,y,W-2*P,rh-12);x.fillStyle="#9fc4ee";x.font="400 24px sans-serif";x.fillText(a,P+22,y+30);
+  x.fillStyle="#fff";let f=34;x.font="700 "+f+"px sans-serif";while(x.measureText(b).width>W-2*P-44&&f>18){f--;x.font="700 "+f+"px sans-serif"}x.fillText(b,P+22,y+68);y+=rh});
+ x.fillStyle="#9fc4ee";x.font="400 22px sans-serif";x.fillText("Gerado em "+fd(new Date())+" · estimativa, não é garantia de horário",P,H-34);return c}
+$("div").onclick=()=>{const o=divLines();if(!o){alert("Preencha o início e os volumes para gerar o resultado.");return}
+ const old=document.getElementById("dvbox");if(old)old.remove();const c=divPng(o),box=document.createElement("section");box.className="card";box.id="dvbox";
+ box.innerHTML='<h2>Divulgar resultado</h2><div class="bar"><button type="button" id="dv1">Copiar texto (WhatsApp)</button><button type="button" id="dv2">Baixar imagem (PNG)</button><button type="button" id="dv3">Compartilhar</button><button type="button" id="dv4">Fechar</button></div><p class="note" id="dvm"></p>';
+ c.style.cssText="max-width:100%;height:auto;border-radius:10px";box.appendChild(c);$("res").closest("section").after(box);
+ const m=t=>{$("dvm").textContent=t},blob=()=>new Promise(r=>c.toBlob(r,"image/png"));
+ $("dv1").onclick=async()=>{try{await navigator.clipboard.writeText(divText());m("Texto copiado. É só colar no WhatsApp.")}catch(e){const t=document.createElement("textarea");t.value=divText();document.body.appendChild(t);t.select();document.execCommand("copy");t.remove();m("Texto copiado.")}};
+ $("dv2").onclick=async()=>{const a=document.createElement("a");a.href=URL.createObjectURL(await blob());a.download="estimativa-"+(($("nav").value||"LOPA").replace(/\W+/g,"-"))+".png";a.click();m("Imagem baixada.")};
+ $("dv3").onclick=async()=>{try{const f=new File([await blob()],"estimativa.png",{type:"image/png"});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],text:divText()});else if(navigator.share)await navigator.share({text:divText()});else m("Seu navegador não tem compartilhamento direto. Use copiar texto ou baixar imagem.")}catch(e){}};
+ $("dv4").onclick=()=>box.remove();box.scrollIntoView({behavior:"smooth"})};
  $("rel").onclick=report;$("prt").onclick=()=>window.print();$("fch").onclick=()=>{$("relat").hidden=true};
  $("clr").onclick=()=>{const b=$("clr");if(!b.dataset.c){b.dataset.c=1;b.textContent="Confirmar: limpar";setTimeout(()=>{delete b.dataset.c;b.textContent="Limpar tudo"},5000);return}try{localStorage.removeItem("estpantanal")}catch(e){}location.reload()};
  $("tab").addEventListener("change",e=>{const t=e.target;if(t.dataset.k){TERN[+t.dataset.k]=+t.value;run()}else if(t.dataset.t!==undefined){if(t.value==="")delete RT[+t.dataset.t];else RT[+t.dataset.t]=+t.value;run()}else if(t.dataset.r!==undefined){if(t.value==="")delete REAL[+t.dataset.r];else REAL[+t.dataset.r]=Math.max(0,+t.value);run()}});
